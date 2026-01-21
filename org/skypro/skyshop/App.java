@@ -67,7 +67,6 @@ public class App {
         searchEngine.printSearchResults("кабель");
 
         searchEngine.printSearchResults("2024");
-
         searchEngine.printSearchResults("планшет");
 
         System.out.println("\n7. Демонстрация работы корзины:");
