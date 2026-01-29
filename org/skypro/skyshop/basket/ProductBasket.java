@@ -22,8 +22,9 @@ public class ProductBasket {
         }
     }
 
-    public int getTotalPrice() {
-        int total = 0;
+
+    public double getTotalPrice() {  // ← double вместо int!
+        double total = 0;
         for (int i = 0; i < productCount; i++) {
             if (products[i] != null) {
                 total += products[i].getPrice();
@@ -44,14 +45,15 @@ public class ProductBasket {
         for (int i = 0; i < productCount; i++) {
             Product product = products[i];
             if (product != null) {
-                System.out.println(product.toString());
+
+                System.out.println(product.getStringRepresentation());  // ← вместо toString()
 
                 if (product.isSpecial()) {
                     specialCount++;
                 }
             }
         }
-        System.out.println("Итого: " + getTotalPrice());
+        System.out.println("Итого: " + getTotalPrice() + " руб.");
         System.out.println("Специальных товаров: " + specialCount);
     }
 
