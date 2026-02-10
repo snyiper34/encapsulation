@@ -138,5 +138,6 @@ public class App {
         basket.printBasketContents();
 
         System.out.println("\n=== Демонстрация завершена ===");
+
     }
 }
