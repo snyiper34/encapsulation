@@ -1,62 +1,48 @@
 package org.skypro.skyshop.search;
 
+
+import org.skypro.skyshop.Searchable;
+import org.skypro.skyshop.search.exceptions.BestResultNotFound;
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchEngine {
-    private final Searchable[] searchables;
-    private int currentIndex;
 
-    public SearchEngine(int capacity) {
-        this.searchables = new Searchable[capacity];
-        this.currentIndex = 0;
+    private List<Searchable> items = new ArrayList<>();
+
+    public void addItem(Searchable item) {
+        items.add(item);
     }
 
-    public void add(Searchable searchable) {
-        if (currentIndex < searchables.length) {
-            searchables[currentIndex] = searchable;
-            currentIndex++;
-            System.out.println("Добавлен для поиска: " + searchable.getStringRepresentation());
-        } else {
-            System.out.println("Невозможно добавить - достигнут лимит элементов поиска");
+    public Searchable findBestMatch(String search) throws BestResultNotFound {
+        if (items.isEmpty()) {
+            throw new BestResultNotFound(search);
         }
-    }
 
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5];
-        int resultCount = 0;
+        Searchable bestMatch = null;
+        int maxCount = 0;
 
-        for (Searchable searchable : searchables) {
-            if (searchable == null) {
-                continue;
+        for (Searchable item : items) {
+            String searchTerm = item.getSearchTerm().toLowerCase();
+            String searchLower = search.toLowerCase();
+
+            int count = 0;
+            int index = 0;
+            while ((index = searchTerm.indexOf(searchLower, index)) != -1) {
+                count++;
+                index += searchLower.length();
             }
 
-            if (searchable.getSearchTerm().toLowerCase().contains(query.toLowerCase())) {
-                results[resultCount] = searchable;
-                resultCount++;
-
-                if (resultCount >= 5) {
-                    break;
-                }
+            if (count > maxCount) {
+                maxCount = count;
+                bestMatch = item;
             }
         }
 
-        System.out.println("По запросу '" + query + "' найдено результатов: " + resultCount);
-        return results;
-    }
-
-    public void printSearchResults(String query) {
-        Searchable[] results = search(query);
-        System.out.println("\nРезультаты поиска по запросу: '" + query + "'");
-
-        boolean foundAny = false;
-        for (int i = 0; i < results.length; i++) {
-            if (results[i] != null) {
-                System.out.println((i + 1) + ". " + results[i].getStringRepresentation());
-                foundAny = true;
-            }
+        if (maxCount == 0) {
+            throw new BestResultNotFound(search);
         }
 
-        if (!foundAny) {
-            System.out.println("Ничего не найдено");
-        }
-        System.out.println();
+        return bestMatch;
     }
 }

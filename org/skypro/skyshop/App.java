@@ -4,7 +4,8 @@ import org.skypro.skyshop.product.*;
 import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.article.Article;
 import org.skypro.skyshop.search.SearchEngine;
-import org.skypro.skyshop.search.Searchable;
+
+import org.skypro.skyshop.search.exceptions.BestResultNotFound;
 
 public class App {
     public static void main(String[] args) {
@@ -40,34 +41,72 @@ public class App {
         );
 
         System.out.println("\n3. Создаем поисковый движок:");
-        SearchEngine searchEngine = new SearchEngine(20); // Вместимость 20 элементов
+        SearchEngine searchEngine = new SearchEngine(); // БЕЗ параметра - используем конструктор по умолчанию
 
         System.out.println("\n4. Добавляем товары в поисковый движок:");
-        searchEngine.add(laptop);
-        searchEngine.add(mouse);
-        searchEngine.add(smartphone);
-        searchEngine.add(headphones);
-        searchEngine.add(cable);
-        searchEngine.add(adapter);
+        searchEngine.addItem(laptop);    // метод addItem, а не add
+        searchEngine.addItem(mouse);
+        searchEngine.addItem(smartphone);
+        searchEngine.addItem(headphones);
+        searchEngine.addItem(cable);
+        searchEngine.addItem(adapter);
 
         System.out.println("\n5. Добавляем статьи в поисковый движок:");
-        searchEngine.add(article1);
-        searchEngine.add(article2);
-        searchEngine.add(article3);
-        searchEngine.add(article4);
+        searchEngine.addItem(article1);
+        searchEngine.addItem(article2);
+        searchEngine.addItem(article3);
+        searchEngine.addItem(article4);
 
         System.out.println("\n6. Демонстрация поиска:");
 
-        searchEngine.printSearchResults("ноутбук");
+        // Используем метод findBestMatch вместо printSearchResults
+        try {
+            System.out.println("\nПоиск 'ноутбук':");
+            Searchable result = searchEngine.findBestMatch("ноутбук");
+            System.out.println("Найден: " + result.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Не найдено: " + e.getMessage());
+        }
 
-        searchEngine.printSearchResults("беспроводные");
+        try {
+            System.out.println("\nПоиск 'беспроводные':");
+            Searchable result = searchEngine.findBestMatch("беспроводные");
+            System.out.println("Найден: " + result.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Не найдено: " + e.getMessage());
+        }
 
-        searchEngine.printSearchResults("смартфон");
+        try {
+            System.out.println("\nПоиск 'смартфон':");
+            Searchable result = searchEngine.findBestMatch("смартфон");
+            System.out.println("Найден: " + result.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Не найдено: " + e.getMessage());
+        }
 
-        searchEngine.printSearchResults("кабель");
+        try {
+            System.out.println("\nПоиск 'кабель':");
+            Searchable result = searchEngine.findBestMatch("кабель");
+            System.out.println("Найден: " + result.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Не найдено: " + e.getMessage());
+        }
 
-        searchEngine.printSearchResults("2024");
-        searchEngine.printSearchResults("планшет");
+        try {
+            System.out.println("\nПоиск '2024':");
+            Searchable result = searchEngine.findBestMatch("2024");
+            System.out.println("Найден: " + result.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Не найдено: " + e.getMessage());
+        }
+
+        try {
+            System.out.println("\nПоиск 'планшет' (не существует):");
+            Searchable result = searchEngine.findBestMatch("планшет");
+            System.out.println("Найден: " + result.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Не найдено: " + e.getMessage());
+        }
 
         System.out.println("\n7. Демонстрация работы корзины:");
         ProductBasket basket = new ProductBasket();
@@ -88,8 +127,7 @@ public class App {
         System.out.println("Статья SearchTerm: " + article1.getSearchTerm());
         System.out.println("Статья ContentType: " + article1.getContentType());
 
-        System.out.println("\n10. Тестирование поиска с ограничением 5 результатов:");
-
+        System.out.println("\n10. Добавляем больше товаров для тестирования:");
         SimpleProduct keyboard = new SimpleProduct("Механическая клавиатура", 4500);
         SimpleProduct monitor = new SimpleProduct("Игровой монитор", 25000);
         DiscountedProduct tablet = new DiscountedProduct("Планшет Apple", 45000, 15);
@@ -97,21 +135,27 @@ public class App {
         SimpleProduct webcam = new SimpleProduct("Веб-камера Full HD", 3000);
         SimpleProduct router = new SimpleProduct("Wi-Fi роутер", 5000);
 
-        searchEngine.add(keyboard);
-        searchEngine.add(monitor);
-        searchEngine.add(tablet);
-        searchEngine.add(stand);
-        searchEngine.add(webcam);
-        searchEngine.add(router);
+        searchEngine.addItem(keyboard);
+        searchEngine.addItem(monitor);
+        searchEngine.addItem(tablet);
+        searchEngine.addItem(stand);
+        searchEngine.addItem(webcam);
+        searchEngine.addItem(router);
 
         // Создадим еще статью
         Article article5 = new Article(
                 "Игровая периферия",
                 "Обзор лучших клавиатур, мышей и мониторов для геймеров."
         );
-        searchEngine.add(article5);
+        searchEngine.addItem(article5);
 
-        searchEngine.printSearchResults("игр");
+        try {
+            System.out.println("\nПоиск 'игр':");
+            Searchable result = searchEngine.findBestMatch("игр");
+            System.out.println("Найден: " + result.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Не найдено: " + e.getMessage());
+        }
 
         System.out.println("\n=== Демонстрация завершена ===");
     }
