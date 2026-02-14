@@ -4,8 +4,8 @@ import org.skypro.skyshop.product.*;
 import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.article.Article;
 import org.skypro.skyshop.search.SearchEngine;
-
 import org.skypro.skyshop.search.exceptions.BestResultNotFound;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -41,10 +41,10 @@ public class App {
         );
 
         System.out.println("\n3. Создаем поисковый движок:");
-        SearchEngine searchEngine = new SearchEngine(); // БЕЗ параметра - используем конструктор по умолчанию
+        SearchEngine searchEngine = new SearchEngine();
 
         System.out.println("\n4. Добавляем товары в поисковый движок:");
-        searchEngine.addItem(laptop);    // метод addItem, а не add
+        searchEngine.addItem(laptop);
         searchEngine.addItem(mouse);
         searchEngine.addItem(smartphone);
         searchEngine.addItem(headphones);
@@ -57,106 +57,87 @@ public class App {
         searchEngine.addItem(article3);
         searchEngine.addItem(article4);
 
-        System.out.println("\n6. Демонстрация поиска:");
+        System.out.println("\n6. Демонстрация нового метода search() (возвращает List<Searchable>):");
 
-        // Используем метод findBestMatch вместо printSearchResults
-        try {
-            System.out.println("\nПоиск 'ноутбук':");
-            Searchable result = searchEngine.findBestMatch("ноутбук");
-            System.out.println("Найден: " + result.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Не найдено: " + e.getMessage());
+        System.out.println("\nПоиск 'ноутбук':");
+        List<Searchable> results = searchEngine.search("ноутбук");
+        if (results.isEmpty()) {
+            System.out.println("Не найдено");
+        } else {
+            System.out.println("Найдено " + results.size() + " результатов:");
+            for (Searchable result : results) {
+                System.out.println("  - " + result.getStringRepresentation());
+            }
         }
 
-        try {
-            System.out.println("\nПоиск 'беспроводные':");
-            Searchable result = searchEngine.findBestMatch("беспроводные");
-            System.out.println("Найден: " + result.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Не найдено: " + e.getMessage());
+        System.out.println("\nПоиск 'беспроводные':");
+        results = searchEngine.search("беспроводные");
+        if (results.isEmpty()) {
+            System.out.println("Не найдено");
+        } else {
+            System.out.println("Найдено " + results.size() + " результатов:");
+            for (Searchable result : results) {
+                System.out.println("  - " + result.getStringRepresentation());
+            }
         }
 
-        try {
-            System.out.println("\nПоиск 'смартфон':");
-            Searchable result = searchEngine.findBestMatch("смартфон");
-            System.out.println("Найден: " + result.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Не найдено: " + e.getMessage());
+        System.out.println("\nПоиск 'планшет' (не существует):");
+        results = searchEngine.search("планшет");
+        if (results.isEmpty()) {
+            System.out.println("Не найдено (список пуст)");
         }
 
-        try {
-            System.out.println("\nПоиск 'кабель':");
-            Searchable result = searchEngine.findBestMatch("кабель");
-            System.out.println("Найден: " + result.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Не найдено: " + e.getMessage());
-        }
-
-        try {
-            System.out.println("\nПоиск '2024':");
-            Searchable result = searchEngine.findBestMatch("2024");
-            System.out.println("Найден: " + result.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Не найдено: " + e.getMessage());
-        }
-
-        try {
-            System.out.println("\nПоиск 'планшет' (не существует):");
-            Searchable result = searchEngine.findBestMatch("планшет");
-            System.out.println("Найден: " + result.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Не найдено: " + e.getMessage());
-        }
-
-        System.out.println("\n7. Демонстрация работы корзины:");
+        System.out.println("\n7. Демонстрация работы корзины с новым функционалом:");
         ProductBasket basket = new ProductBasket();
+
         basket.addProduct(laptop);
         basket.addProduct(smartphone);
         basket.addProduct(headphones);
         basket.addProduct(cable);
+        basket.addProduct(new SimpleProduct("Ноутбук Lenovo", 75000)); // Дубликат
+        basket.addProduct(new FixPriceProduct("Кабель USB-C 2м")); // Дубликат
 
+        System.out.println("\nКорзина после добавления продуктов:");
         basket.printBasketContents();
 
-        System.out.println("\n8. Демонстрация getStringRepresentation():");
-        System.out.println(laptop.getStringRepresentation());
-        System.out.println(article1.getStringRepresentation());
+        System.out.println("\n8. Демонстрация удаления продукта по имени:");
 
-        System.out.println("\n9. Проверка методов интерфейса Searchable:");
-        System.out.println("Ноутбук SearchTerm: " + laptop.getSearchTerm());
-        System.out.println("Ноутбук ContentType: " + laptop.getContentType());
-        System.out.println("Статья SearchTerm: " + article1.getSearchTerm());
-        System.out.println("Статья ContentType: " + article1.getContentType());
-
-        System.out.println("\n10. Добавляем больше товаров для тестирования:");
-        SimpleProduct keyboard = new SimpleProduct("Механическая клавиатура", 4500);
-        SimpleProduct monitor = new SimpleProduct("Игровой монитор", 25000);
-        DiscountedProduct tablet = new DiscountedProduct("Планшет Apple", 45000, 15);
-        FixPriceProduct stand = new FixPriceProduct("Подставка для ноутбука");
-        SimpleProduct webcam = new SimpleProduct("Веб-камера Full HD", 3000);
-        SimpleProduct router = new SimpleProduct("Wi-Fi роутер", 5000);
-
-        searchEngine.addItem(keyboard);
-        searchEngine.addItem(monitor);
-        searchEngine.addItem(tablet);
-        searchEngine.addItem(stand);
-        searchEngine.addItem(webcam);
-        searchEngine.addItem(router);
-
-        // Создадим еще статью
-        Article article5 = new Article(
-                "Игровая периферия",
-                "Обзор лучших клавиатур, мышей и мониторов для геймеров."
-        );
-        searchEngine.addItem(article5);
-
-        try {
-            System.out.println("\nПоиск 'игр':");
-            Searchable result = searchEngine.findBestMatch("игр");
-            System.out.println("Найден: " + result.getStringRepresentation());
-        } catch (BestResultNotFound e) {
-            System.out.println("Не найдено: " + e.getMessage());
+        System.out.println("Удаляем продукт 'Ноутбук Lenovo':");
+        List<Product> removed = basket.removeProductsByName("Ноутбук Lenovo");
+        if (removed.isEmpty()) {
+            System.out.println("Продукт не найден в корзине");
+        } else {
+            System.out.println("Удалено " + removed.size() + " продукт(ов):");
+            for (Product product : removed) {
+                System.out.println("  - " + product.getStringRepresentation());
+            }
         }
 
+        System.out.println("\nКорзина после удаления:");
+        basket.printBasketContents();
+
+        System.out.println("\nУдаляем продукт 'Планшет' (не существует):");
+        removed = basket.removeProductsByName("Планшет");
+        if (removed.isEmpty()) {
+            System.out.println("Список удаленных продуктов пустой - продукт не найден");
+        }
+
+        System.out.println("\nКорзина после попытки удаления несуществующего продукта:");
+        basket.printBasketContents();
+
+        System.out.println("\nУдаляем продукт 'Кабель USB-C 2м':");
+        removed = basket.removeProductsByName("Кабель USB-C 2м");
+        if (!removed.isEmpty()) {
+            System.out.println("Удалено " + removed.size() + " продукт(ов):");
+            for (Product product : removed) {
+                System.out.println("  - " + product.getStringRepresentation());
+            }
+        }
+
+        System.out.println("\nФинальное состояние корзины:");
+        basket.printBasketContents();
+
         System.out.println("\n=== Демонстрация завершена ===");
+
     }
 }

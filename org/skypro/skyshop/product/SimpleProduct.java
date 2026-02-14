@@ -27,7 +27,10 @@ public class SimpleProduct extends Product {
 
     @Override
     public String getSearchTerm() {
-        return getName() + " " + price;
+        String priceStr = (price == (int) price)
+                ? String.valueOf((int) price)
+                : String.valueOf(price);
+        return getName() + " " + priceStr;
     }
 
     @Override

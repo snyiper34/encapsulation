@@ -1,48 +1,39 @@
 package org.skypro.skyshop.search;
 
-
 import org.skypro.skyshop.Searchable;
 import org.skypro.skyshop.search.exceptions.BestResultNotFound;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SearchEngine {
-
-    private List<Searchable> items = new ArrayList<>();
+    private List<Searchable> items = new LinkedList<>();
 
     public void addItem(Searchable item) {
         items.add(item);
     }
 
-    public Searchable findBestMatch(String search) throws BestResultNotFound {
-        if (items.isEmpty()) {
-            throw new BestResultNotFound(search);
-        }
-
-        Searchable bestMatch = null;
-        int maxCount = 0;
+    public List<Searchable> search(String searchQuery) {
+        List<Searchable> matches = new LinkedList<>();
 
         for (Searchable item : items) {
             String searchTerm = item.getSearchTerm().toLowerCase();
-            String searchLower = search.toLowerCase();
+            String searchLower = searchQuery.toLowerCase();
 
-            int count = 0;
-            int index = 0;
-            while ((index = searchTerm.indexOf(searchLower, index)) != -1) {
-                count++;
-                index += searchLower.length();
-            }
-
-            if (count > maxCount) {
-                maxCount = count;
-                bestMatch = item;
+            if (searchTerm.contains(searchLower)) {
+                matches.add(item);
             }
         }
 
-        if (maxCount == 0) {
+        return matches;
+    }
+
+    public Searchable findBestMatch(String search) throws BestResultNotFound {
+        List<Searchable> matches = search(search);
+
+        if (matches.isEmpty()) {
             throw new BestResultNotFound(search);
         }
 
-        return bestMatch;
+        return matches.get(0);
     }
 }
