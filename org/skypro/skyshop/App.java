@@ -5,7 +5,7 @@ import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.article.Article;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.exceptions.BestResultNotFound;
-import java.util.List;
+import java.util.*;
 
 public class App {
     public static void main(String[] args) {
@@ -57,37 +57,35 @@ public class App {
         searchEngine.addItem(article3);
         searchEngine.addItem(article4);
 
-        System.out.println("\n6. Демонстрация нового метода search() (возвращает List<Searchable>):");
+        System.out.println("\n6. Демонстрация поиска с алфавитным порядком:");
 
-        System.out.println("\nПоиск 'ноутбук':");
-        List<Searchable> results = searchEngine.search("ноутбук");
-        if (results.isEmpty()) {
+        searchEngine.addItem(new SimpleProduct("Apple MacBook", 120000));
+        searchEngine.addItem(new SimpleProduct("Asus ZenBook", 85000));
+        searchEngine.addItem(new Article("Z-Phones Review", "Обзор самых дорогих наушников"));
+
+        System.out.println("\nПоиск 'ноутбук' (результаты в алфавитном порядке):");
+        Map<String, Searchable> resultsMap = searchEngine.search("ноутбук");
+        if (resultsMap.isEmpty()) {
             System.out.println("Не найдено");
         } else {
-            System.out.println("Найдено " + results.size() + " результатов:");
-            for (Searchable result : results) {
+            System.out.println("Найдено " + resultsMap.size() + " результатов:");
+            for (Searchable result : resultsMap.values()) {
                 System.out.println("  - " + result.getStringRepresentation());
             }
         }
 
-        System.out.println("\nПоиск 'беспроводные':");
-        results = searchEngine.search("беспроводные");
-        if (results.isEmpty()) {
+        System.out.println("\nПоиск 'беспроводные' (результаты в алфавитном порядке):");
+        resultsMap = searchEngine.search("беспроводные");
+        if (resultsMap.isEmpty()) {
             System.out.println("Не найдено");
         } else {
-            System.out.println("Найдено " + results.size() + " результатов:");
-            for (Searchable result : results) {
+            System.out.println("Найдено " + resultsMap.size() + " результатов:");
+            for (Searchable result : resultsMap.values()) {
                 System.out.println("  - " + result.getStringRepresentation());
             }
         }
 
-        System.out.println("\nПоиск 'планшет' (не существует):");
-        results = searchEngine.search("планшет");
-        if (results.isEmpty()) {
-            System.out.println("Не найдено (список пуст)");
-        }
-
-        System.out.println("\n7. Демонстрация работы корзины с новым функционалом:");
+        System.out.println("\n7. Демонстрация работы корзины с HashMap и computeIfAbsent:");
         ProductBasket basket = new ProductBasket();
 
         basket.addProduct(laptop);
@@ -96,11 +94,12 @@ public class App {
         basket.addProduct(cable);
         basket.addProduct(new SimpleProduct("Ноутбук Lenovo", 75000)); // Дубликат
         basket.addProduct(new FixPriceProduct("Кабель USB-C 2м")); // Дубликат
+        basket.addProduct(new SimpleProduct("Apple iPad", 40000)); // Новый продукт
 
         System.out.println("\nКорзина после добавления продуктов:");
         basket.printBasketContents();
 
-        System.out.println("\n8. Демонстрация удаления продукта по имени:");
+        System.out.println("\n8. Демонстрация удаления продукта по имени (remove по ключу):");
 
         System.out.println("Удаляем продукт 'Ноутбук Lenovo':");
         List<Product> removed = basket.removeProductsByName("Ноутбук Lenovo");
@@ -122,22 +121,6 @@ public class App {
             System.out.println("Список удаленных продуктов пустой - продукт не найден");
         }
 
-        System.out.println("\nКорзина после попытки удаления несуществующего продукта:");
-        basket.printBasketContents();
-
-        System.out.println("\nУдаляем продукт 'Кабель USB-C 2м':");
-        removed = basket.removeProductsByName("Кабель USB-C 2м");
-        if (!removed.isEmpty()) {
-            System.out.println("Удалено " + removed.size() + " продукт(ов):");
-            for (Product product : removed) {
-                System.out.println("  - " + product.getStringRepresentation());
-            }
-        }
-
-        System.out.println("\nФинальное состояние корзины:");
-        basket.printBasketContents();
-
         System.out.println("\n=== Демонстрация завершена ===");
-
     }
 }
