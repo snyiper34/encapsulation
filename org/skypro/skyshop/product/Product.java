@@ -26,7 +26,7 @@ public abstract class Product implements Searchable {
         return name;
     }
 
-    public abstract double getPrice();
+    public abstract int getPrice();
     public abstract boolean isSpecial();
 
     @Override

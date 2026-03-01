@@ -9,9 +9,9 @@ import java.util.*;
 
 public class App {
     public static void main(String[] args) {
-        System.out.println("=== Демонстрация работы интернет-магазина с поиском ===\n");
+        System.out.println("=== Демонстрация работы интернет-магазина с StreamAPI и int ценами ===\n");
 
-        System.out.println("1. Создаем продукты:");
+        System.out.println("1. Создаем продукты (с целочисленными ценами):");
         SimpleProduct laptop = new SimpleProduct("Ноутбук Lenovo", 75000);
         SimpleProduct mouse = new SimpleProduct("Беспроводная мышь", 1500);
         DiscountedProduct smartphone = new DiscountedProduct("Смартфон Samsung", 35000, 10);
@@ -24,23 +24,20 @@ public class App {
                 "Как выбрать ноутбук",
                 "В этом руководстве мы расскажем, на что обратить внимание при выборе ноутбука для работы и учебы."
         );
-
         Article article2 = new Article(
                 "Преимущества беспроводных наушников",
                 "Беспроводные наушники обеспечивают свободу движения и высокое качество звука."
         );
-
         Article article3 = new Article(
                 "Обзор смартфонов 2024",
                 "Лучшие смартфоны этого года: сравнение характеристик и цен."
         );
-
         Article article4 = new Article(
                 "Советы по уходу за техникой",
                 "Как продлить срок службы вашей электроники: простые правила."
         );
 
-        System.out.println("\n3. Создаем поисковый движек:");
+        System.out.println("\n3. Создаем поисковый движок:");
         SearchEngine searchEngine = new SearchEngine();
 
         System.out.println("\n4. Добавляем товары в поисковый движок:");
@@ -57,16 +54,7 @@ public class App {
         searchEngine.addItem(article3);
         searchEngine.addItem(article4);
 
-        searchEngine.addItem(new SimpleProduct("A", 100));
-        searchEngine.addItem(new SimpleProduct("BB", 200));
-        searchEngine.addItem(new SimpleProduct("CCC", 300));
-        searchEngine.addItem(new SimpleProduct("DDDD", 400));
-        searchEngine.addItem(new Article("E", "Статья с коротким именем"));
-        searchEngine.addItem(new Article("FF", "Статья с именем средней длины"));
-        searchEngine.addItem(new Article("GGG", "Еще одна статья"));
-        searchEngine.addItem(new Article("Очень длинное название статьи для проверки сортировки", "Контент"));
-
-        System.out.println("\n6. Демонстрация поиска с сортировкой (от длинных к коротким):");
+        System.out.println("\n6. Демонстрация метода search (один стрим):");
 
         String query = "а";
         System.out.println("\nПоиск по запросу '" + query + "':");
@@ -75,32 +63,30 @@ public class App {
         if (results.isEmpty()) {
             System.out.println("Ничего не найдено");
         } else {
-            System.out.println("Найдено " + results.size() + " результатов (отсортировано по длине имени):");
+            System.out.println("Найдено " + results.size() + " результатов:");
             for (Searchable result : results) {
                 System.out.println("  - [" + result.getName().length() + " симв.] " + result.getStringRepresentation());
             }
         }
 
-        System.out.println("\n7. Демонстрация работы корзины (без изменений):");
+        System.out.println("\n7. Демонстрация работы корзины (mapToInt, forEach, filter):");
         ProductBasket basket = new ProductBasket();
+
 
         basket.addProduct(laptop);
         basket.addProduct(smartphone);
         basket.addProduct(headphones);
         basket.addProduct(cable);
+        basket.addProduct(new SimpleProduct("Ноутбук Lenovo", 75000));
+        basket.addProduct(new FixPriceProduct("Кабель USB-C 2м"));
+        basket.addProduct(new DiscountedProduct("Apple iPad", 40000, 5));
+        basket.addProduct(new SimpleProduct("Apple iPad", 40000));
 
         System.out.println("\nКорзина после добавления продуктов:");
         basket.printBasketContents();
 
-        System.out.println("\n8. Проверка equals/hashCode (дубликаты не добавляются):");
-        System.out.println("Пытаемся добавить продукт с существующим именем 'Ноутбук Lenovo':");
-        searchEngine.addItem(new SimpleProduct("Ноутбук Lenovo", 99999));
-        System.out.println("Пытаемся добавить статью с существующим заголовком 'Как выбрать ноутбук':");
-        searchEngine.addItem(new Article("Как выбрать ноутбук", "Дубликат"));
-
-        System.out.println("\nПовторный поиск (количество результатов не должно увеличиться):");
-        results = searchEngine.search("ноутбук");
-        System.out.println("Найдено результатов: " + results.size());
+        System.out.println("\n8. Проверка getTotalPrice() с mapToInt и sum:");
+        System.out.println("Общая стоимость корзины: " + basket.getTotalPrice() + " руб.");
 
         System.out.println("\n=== Демонстрация завершена ===");
     }

@@ -2,6 +2,7 @@ package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProductBasket {
     private final Map<String, List<Product>> productsMap;
@@ -29,14 +30,18 @@ public class ProductBasket {
         return removedProducts;
     }
 
-    public double getTotalPrice() {
-        double total = 0;
-        for (List<Product> productList : productsMap.values()) {
-            for (Product product : productList) {
-                total += product.getPrice();
-            }
-        }
-        return total;
+    public int getTotalPrice() {
+        return productsMap.values().stream()
+                .flatMap(Collection::stream)
+                .mapToInt(Product::getPrice)
+                .sum();
+    }
+
+    private long getSpecialCount() {
+        return productsMap.values().stream()
+                .flatMap(Collection::stream)
+                .filter(Product::isSpecial)
+                .count();
     }
 
     public void printBasketContents() {
@@ -46,24 +51,20 @@ public class ProductBasket {
         }
 
         System.out.println("Содержимое корзины:");
-        int specialCount = 0;
-        int totalItems = 0;
 
-        for (Map.Entry<String, List<Product>> entry : productsMap.entrySet()) {
-            String productName = entry.getKey();
-            List<Product> productList = entry.getValue();
+        productsMap.values().stream()
+                .flatMap(Collection::stream)
+                .forEach(product -> System.out.println("  " + product.getStringRepresentation()));
 
-            for (Product product : productList) {
-                System.out.println("  " + product.getStringRepresentation());
-                if (product.isSpecial()) {
-                    specialCount++;
-                }
-                totalItems++;
-            }
-        }
+        long specialCount = getSpecialCount();
+        int totalPrice = getTotalPrice();
+
+        long totalItems = productsMap.values().stream()
+                .mapToLong(List::size)
+                .sum();
 
         System.out.println("Всего товаров: " + totalItems);
-        System.out.println("Итого: " + getTotalPrice() + " руб.");
+        System.out.println("Итого: " + totalPrice + " руб.");
         System.out.println("Специальных товаров: " + specialCount);
     }
 
@@ -74,13 +75,5 @@ public class ProductBasket {
     public void clearBasket() {
         productsMap.clear();
         System.out.println("Корзина очищена");
-    }
-
-    public int getProductCount() {
-        int count = 0;
-        for (List<Product> productList : productsMap.values()) {
-            count += productList.size();
-        }
-        return count;
     }
 }
