@@ -62,4 +62,5 @@ public class DiscountedProduct extends Product {
         return String.format("%s - %.2f руб. (скидка %.1f%%, итого: %.2f руб.)",
                 getName(), basePrice, discountPercentage, getFinalPrice());
     }
+
 }

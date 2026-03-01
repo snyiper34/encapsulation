@@ -40,7 +40,7 @@ public class App {
                 "Как продлить срок службы вашей электроники: простые правила."
         );
 
-        System.out.println("\n3. Создаем поисковый движок:");
+        System.out.println("\n3. Создаем поисковый движек:");
         SearchEngine searchEngine = new SearchEngine();
 
         System.out.println("\n4. Добавляем товары в поисковый движок:");
@@ -57,69 +57,50 @@ public class App {
         searchEngine.addItem(article3);
         searchEngine.addItem(article4);
 
-        System.out.println("\n6. Демонстрация поиска с алфавитным порядком:");
+        searchEngine.addItem(new SimpleProduct("A", 100));
+        searchEngine.addItem(new SimpleProduct("BB", 200));
+        searchEngine.addItem(new SimpleProduct("CCC", 300));
+        searchEngine.addItem(new SimpleProduct("DDDD", 400));
+        searchEngine.addItem(new Article("E", "Статья с коротким именем"));
+        searchEngine.addItem(new Article("FF", "Статья с именем средней длины"));
+        searchEngine.addItem(new Article("GGG", "Еще одна статья"));
+        searchEngine.addItem(new Article("Очень длинное название статьи для проверки сортировки", "Контент"));
 
-        searchEngine.addItem(new SimpleProduct("Apple MacBook", 120000));
-        searchEngine.addItem(new SimpleProduct("Asus ZenBook", 85000));
-        searchEngine.addItem(new Article("Z-Phones Review", "Обзор самых дорогих наушников"));
+        System.out.println("\n6. Демонстрация поиска с сортировкой (от длинных к коротким):");
 
-        System.out.println("\nПоиск 'ноутбук' (результаты в алфавитном порядке):");
-        Map<String, Searchable> resultsMap = searchEngine.search("ноутбук");
-        if (resultsMap.isEmpty()) {
-            System.out.println("Не найдено");
+        String query = "а";
+        System.out.println("\nПоиск по запросу '" + query + "':");
+        Set<Searchable> results = searchEngine.search(query);
+
+        if (results.isEmpty()) {
+            System.out.println("Ничего не найдено");
         } else {
-            System.out.println("Найдено " + resultsMap.size() + " результатов:");
-            for (Searchable result : resultsMap.values()) {
-                System.out.println("  - " + result.getStringRepresentation());
+            System.out.println("Найдено " + results.size() + " результатов (отсортировано по длине имени):");
+            for (Searchable result : results) {
+                System.out.println("  - [" + result.getName().length() + " симв.] " + result.getStringRepresentation());
             }
         }
 
-        System.out.println("\nПоиск 'беспроводные' (результаты в алфавитном порядке):");
-        resultsMap = searchEngine.search("беспроводные");
-        if (resultsMap.isEmpty()) {
-            System.out.println("Не найдено");
-        } else {
-            System.out.println("Найдено " + resultsMap.size() + " результатов:");
-            for (Searchable result : resultsMap.values()) {
-                System.out.println("  - " + result.getStringRepresentation());
-            }
-        }
-
-        System.out.println("\n7. Демонстрация работы корзины с HashMap и computeIfAbsent:");
+        System.out.println("\n7. Демонстрация работы корзины (без изменений):");
         ProductBasket basket = new ProductBasket();
 
         basket.addProduct(laptop);
         basket.addProduct(smartphone);
         basket.addProduct(headphones);
         basket.addProduct(cable);
-        basket.addProduct(new SimpleProduct("Ноутбук Lenovo", 75000)); // Дубликат
-        basket.addProduct(new FixPriceProduct("Кабель USB-C 2м")); // Дубликат
-        basket.addProduct(new SimpleProduct("Apple iPad", 40000)); // Новый продукт
 
         System.out.println("\nКорзина после добавления продуктов:");
         basket.printBasketContents();
 
-        System.out.println("\n8. Демонстрация удаления продукта по имени (remove по ключу):");
+        System.out.println("\n8. Проверка equals/hashCode (дубликаты не добавляются):");
+        System.out.println("Пытаемся добавить продукт с существующим именем 'Ноутбук Lenovo':");
+        searchEngine.addItem(new SimpleProduct("Ноутбук Lenovo", 99999));
+        System.out.println("Пытаемся добавить статью с существующим заголовком 'Как выбрать ноутбук':");
+        searchEngine.addItem(new Article("Как выбрать ноутбук", "Дубликат"));
 
-        System.out.println("Удаляем продукт 'Ноутбук Lenovo':");
-        List<Product> removed = basket.removeProductsByName("Ноутбук Lenovo");
-        if (removed.isEmpty()) {
-            System.out.println("Продукт не найден в корзине");
-        } else {
-            System.out.println("Удалено " + removed.size() + " продукт(ов):");
-            for (Product product : removed) {
-                System.out.println("  - " + product.getStringRepresentation());
-            }
-        }
-
-        System.out.println("\nКорзина после удаления:");
-        basket.printBasketContents();
-
-        System.out.println("\nУдаляем продукт 'Планшет' (не существует):");
-        removed = basket.removeProductsByName("Планшет");
-        if (removed.isEmpty()) {
-            System.out.println("Список удаленных продуктов пустой - продукт не найден");
-        }
+        System.out.println("\nПовторный поиск (количество результатов не должно увеличиться):");
+        results = searchEngine.search("ноутбук");
+        System.out.println("Найдено результатов: " + results.size());
 
         System.out.println("\n=== Демонстрация завершена ===");
     }

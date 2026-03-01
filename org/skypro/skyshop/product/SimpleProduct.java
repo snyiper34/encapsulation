@@ -42,4 +42,5 @@ public class SimpleProduct extends Product {
     public String getStringRepresentation() {
         return String.format("%s - %.2f руб.", getName(), price);
     }
+
 }
