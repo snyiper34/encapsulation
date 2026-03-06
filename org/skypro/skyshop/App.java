@@ -54,24 +54,22 @@ public class App {
         searchEngine.addItem(article3);
         searchEngine.addItem(article4);
 
+        searchEngine.addItem(new SimpleProduct("A", 100));
+        searchEngine.addItem(new SimpleProduct("BB", 200));
+        searchEngine.addItem(new SimpleProduct("CCC", 300));
+        searchEngine.addItem(new SimpleProduct("DDDD", 400));
+        searchEngine.addItem(new Article("E", "Статья с коротким именем"));
+        searchEngine.addItem(new Article("Очень длинное название для проверки сортировки", "Контент"));
+
         System.out.println("\n6. Демонстрация метода search (один стрим):");
 
-        String query = "а";
-        System.out.println("\nПоиск по запросу '" + query + "':");
-        Set<Searchable> results = searchEngine.search(query);
-
-        if (results.isEmpty()) {
-            System.out.println("Ничего не найдено");
-        } else {
-            System.out.println("Найдено " + results.size() + " результатов:");
-            for (Searchable result : results) {
-                System.out.println("  - [" + result.getName().length() + " симв.] " + result.getStringRepresentation());
-            }
-        }
+        testSearch(searchEngine, "ноутбук");
+        testSearch(searchEngine, "беспроводные");
+        testSearch(searchEngine, "а");
+        testSearch(searchEngine, "iphone");
 
         System.out.println("\n7. Демонстрация работы корзины (mapToInt, forEach, filter):");
         ProductBasket basket = new ProductBasket();
-
 
         basket.addProduct(laptop);
         basket.addProduct(smartphone);
@@ -81,13 +79,39 @@ public class App {
         basket.addProduct(new FixPriceProduct("Кабель USB-C 2м"));
         basket.addProduct(new DiscountedProduct("Apple iPad", 40000, 5));
         basket.addProduct(new SimpleProduct("Apple iPad", 40000));
-
         System.out.println("\nКорзина после добавления продуктов:");
         basket.printBasketContents();
 
         System.out.println("\n8. Проверка getTotalPrice() с mapToInt и sum:");
         System.out.println("Общая стоимость корзины: " + basket.getTotalPrice() + " руб.");
 
+        System.out.println("\n9. Демонстрация удаления продукта по имени:");
+        System.out.println("Удаляем продукт 'Ноутбук Lenovo':");
+        List<Product> removed = basket.removeProductsByName("Ноутбук Lenovo");
+        if (!removed.isEmpty()) {
+            System.out.println("Удалено " + removed.size() + " продукт(ов):");
+            for (Product product : removed) {
+                System.out.println("  - " + product.getStringRepresentation());
+            }
+        }
+
+        System.out.println("\nКорзина после удаления:");
+        basket.printBasketContents();
+
         System.out.println("\n=== Демонстрация завершена ===");
+    }
+
+    private static void testSearch(SearchEngine searchEngine, String query) {
+        System.out.println("\nПоиск по запросу '" + query + "':");
+        Set<Searchable> results = searchEngine.search(query);
+
+        if (results.isEmpty()) {
+            System.out.println("  Ничего не найдено");
+        } else {
+            System.out.println("  Найдено " + results.size() + " результатов (отсортировано от длинных к коротким):");
+            for (Searchable result : results) {
+                System.out.println("    - [" + result.getName().length() + " симв.] " + result.getStringRepresentation());
+            }
+        }
     }
 }
